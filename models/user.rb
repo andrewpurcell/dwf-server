@@ -1,7 +1,7 @@
 class User
   attr :fb_uid, :name, :email, :auth_token
   def self.exists?(fb_id)
-    $redis.hexists('user:'+fb_id, 'name').to_i.eql? 1
+    $redis.hexists('user:'+fb_id, 'name')
   end
 
   def self.find(fb_id)
