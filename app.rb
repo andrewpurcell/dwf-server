@@ -34,6 +34,11 @@ before do
   configure :test, :development do
     $redis = Redis.new
   end
+  
+  redirect "/auth/facebook" unless session[:at]
+  @client = Mogli::Client.new(session[:at])
+  @app  = Mogli::Application.find(ENV["FACEBOOK_APP_ID"], @client)
+  @user = Mogli::User.find("me", @client)
 end
 
 helpers do

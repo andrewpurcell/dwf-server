@@ -3,7 +3,7 @@ body {
     margin-top: 20%;
     font-family: sans-serif;
     color: #333;
-    width: 600px;
+    width: 400px;
 }
 
 h1 {
@@ -16,6 +16,11 @@ label {
 
 #formsie input {
     color: #888;
+    width: 20px;
+}
+
+#submit {
+    width: 100px; float: right;
 }
 #formsie #submit {
     color: #000;
