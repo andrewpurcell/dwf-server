@@ -1,98 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
+<h1>Dine with Friends</h1>
+<form action="/post" method="POST" id="formsie">
+	<span><label for="username">Username:</label>
+	<input name="username" type="text" id="username" value="Your name" /></span><br />
+	<span><label for="time">Time to wait:</label>
+	<input name="time" id="time" type="text" value="in minutes" /><br /></span>
+	<input type="submit" id="submit" name="submit" value="Submit!" />
+</form>
 
-    <title><%= @app.name %></title>
-    <link rel="stylesheet" href="/stylesheets/screen.css" media="screen">
-    <meta property="og:title" content=""/>
-    <meta property="og:type" content=""/>
-    <meta property="og:url" content=""/>
-    <meta property="og:image" content=""/>
-    <meta property="og:site_name" content=""/>
-    <meta property="fb:app_id" content="<%= @app.id %>" />
-    <script>
-      function popup(pageURL, title,w,h) {
-        var left = (screen.width/2)-(w/2);
-        var top = (screen.height/2)-(h/2);
-        var targetWin = window.open(
-          pageURL,
-          title,
-          'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left
-          );
-      }
-    </script>
-    <!--[if IE]>
-      <script>
-        var tags = ['header', 'section'];
-        while(tags.length)
-          document.createElement(tags.pop());
-      </script>
-    <![endif]-->
-  </head>
-  <body>
-    <header class="clearfix">
-      <p id="picture" style="background-image: url(https://graph.facebook.com/me/picture?type=normal&access_token=<%= @client.access_token %>)"></p>
-      <div>
-        <h1>Welcome, <strong><%= @user.name %></strong></h1>
-        <p class="tagline">
-          This is your app
-          <a href="<%= @app.link %>"><%= @app.name %></a>
-        </p>
-        <div id="share-app">
-          <p>Share your app:</p>
-          <ul>
-            <li>
-              <a href="#" class="facebook-button" onclick="popup('<%= post_to_wall_url %>', 'Post to Wall', 580, 400);">
-                <span class="plus">Post to Wall</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="facebook-button speech-bubble" onclick="popup('<%= send_to_friends_url %>', 'Send', 580, 400);">
-                <span class="speech-bubble">Send to Friends</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </header>
-    <section id="get-started">
-      <p>Welcome to your Facebook app, running on <span>heroku</span>!</p>
-      <a href="http://devcenter.heroku.com/articles/facebook" class="button">Learn How to Edit This App</a>
-    </section>
+<div id="fb-root"></div>
+<script>
+	window.fbAsyncInit = function() {
+		FB.init({
+		  appId      : '341849212513410',
+		  status     : true, 
+		  cookie     : true,
+		  xfbml      : true,
+		  oauth      : true,
+		});
 
-    <section id="samples" class="clearfix">
-      <h1>Examples of the Facebook Graph API</h1>
+		FB.api('/me', function(user) {
+		  if (user) {
+			console.log("user id: "+user.id);
+		    var image = document.getElementById('image');
+		    image.src = 'https://graph.facebook.com/' + user.id + '/picture';
+		    var name = document.getElementById('fbname');
+		    name.innerHTML = user.name
+		  }
+		});
+	};
 
-      <div class="list">
-        <h3>A few of your friends</h3>
-        <ul class="friends">
-          <% @friends.each do |friend| %>
-            <li>
-              <a href="#" onclick="window.open('http://www.facebook.com/<%= friend.id %>')">
-                <img src="https://graph.facebook.com/<%= friend.id %>/picture?type=square" alt="<%= friend.name %>">
-                <%= friend.name %>
-              </a>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+	(function(d){
+		var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+		js = d.createElement('script'); js.id = id; js.async = true;
+		js.src = "//connect.facebook.net/en_US/all.js";
+		d.getElementsByTagName('head')[0].appendChild(js);
+	}(document));
 
-
-      <div class="list">
-        <h3>Friends using this app</h3>
-        <ul class="friends">
-          <% @friends_using_app.each do |friend_result| %>
-            <li>
-              <a href="#" onclick="window.open('http://www.facebook.com/<%= friend_result['uid'] %>')">
-                <img src="<%= friend_result['pic_square'] %>" alt="<%= friend_result['name'] %>">
-                <%= friend_result['name'] %>
-              </a>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    </section>
-
-  </body>
-</html>
+</script>
+<div align="center">
+  <img id="image"/>
+  <p>name: <span id="fbname"></span></p>
+</div>
+<div class="fb-login-button" data-scope="email,user_checkins">
+	Login with Facebook
+</div>
