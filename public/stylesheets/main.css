@@ -22,3 +22,11 @@ label {
     float: right;
     width: 100%;
 }
+
+#footer-nav ul {
+    list-style: none;
+}
+
+#footer-nav ul li {
+    display: inline;
+}
