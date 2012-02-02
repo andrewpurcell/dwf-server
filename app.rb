@@ -1,5 +1,7 @@
 require "sinatra"
 require "mogli"
+require 'erubis'
+require 'redis'
 
 enable :sessions
 set :raise_errors, false
