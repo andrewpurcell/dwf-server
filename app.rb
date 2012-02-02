@@ -25,6 +25,14 @@ before do
   if settings.environment == :production && request.scheme != 'https'
     redirect "https://#{request.env['HTTP_HOST']}"
   end
+  configure :production do
+    uri = URI.parse(ENV["REDISTOGO_URL"])
+    $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+  end
+
+  configure :test, :development do
+    $redis = Redis.new
+  end
 end
 
 helpers do
@@ -83,11 +91,12 @@ get "/" do
   @user = Mogli::User.find("me", @client)
 
   # access friends, photos and likes directly through the user instance
-  @friends = @user.friends[0, 4]
+  # @friends = @user.friends[0, 4]
 
   # for other data you can always run fql
-  @friends_using_app = @client.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+  # @friends_using_app = @client.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
 
+  @title = "DineWithFriends - social eating"
   erb :index
 end
 
@@ -110,27 +119,6 @@ get '/auth/facebook/callback' do
   client = Mogli::Client.create_from_code_and_authenticator(params[:code], authenticator)
   session[:at] = client.access_token
   redirect '/'
-end
-
-
-configure :production do
-  uri = URI.parse(ENV["REDISTOGO_URL"])
-  $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-end
-
-configure :test, :development do
-  $redis = Redis.new
-end
-
-# set :views, File.join(File.dirname(__FILE__), '../views')
-# set :public_folder, File.join(File.dirname(__FILE__), '../public')
-set :dump_errors, true
-
-
-
-get '/' do 
-  @title = "DineWithFriends - social eating"
-  erb :index
 end
 
 post '/new_user' do 
