@@ -33,7 +33,7 @@ class User
   def create_event(ttl)
     $redis.multi do
       $redis.sadd('active_users', @fb_uid)
-      $redis.setex('user:'+@fb_uid+':active', ttl, 'yes')
+      $redis.setex('user:'+@fb_uid+':active', ttl*60, 'yes')
     end
   end
 
@@ -60,6 +60,10 @@ class User
   
   def self.friends? (fid1, fid2)
     $redis.sismember('user:'+fid1+':friends', fid2)
+  end
+  
+  def first_name
+    return @name[/^\w+\b/][0]
   end
   
   # for a given fb_uid, add all friends who are using DWF
