@@ -78,6 +78,10 @@ helpers do
   end
 end
 
+not_found do
+  erb :"404"
+end
+
 # the facebook session expired! reset ours and restart the process
 error(Mogli::Client::HTTPException) do
   session[:at] = nil
