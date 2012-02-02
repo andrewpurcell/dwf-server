@@ -117,7 +117,12 @@ end
 get '/auth/facebook/callback' do
   client = Mogli::Client.create_from_code_and_authenticator(params[:code], authenticator)
   session[:at] = client.access_token
-  redirect '/register'
+  user = get_me()
+  if User.exist? user.id
+    redirect '/'
+  else
+    redirect '/register'
+  end
 end
 
 get '/sync_friends' do

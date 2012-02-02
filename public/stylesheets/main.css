@@ -23,10 +23,10 @@ label {
     width: 100%;
 }
 
-#footer-nav ul {
+#footer-nav {
     list-style: none;
 }
 
-#footer-nav ul li {
+#footer-nav li {
     display: inline;
 }
