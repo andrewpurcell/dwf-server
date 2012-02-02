@@ -88,6 +88,10 @@ error(Mogli::Client::HTTPException) do
   redirect "/auth/facebook"
 end
 
+error do
+  'Sorry there was a nasty error - ' + env['sinatra.error'].name
+end
+
 get "/" do
   redirect "/auth/facebook" unless session[:at]
   @client = Mogli::Client.new(session[:at])
