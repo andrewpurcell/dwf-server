@@ -1,12 +1,6 @@
 <h1>Dine with Friends</h1>
-<h2>Welcome, <%= @user.name + ', '+@user.id %></h2>
+<h2>Welcome, <%= @user.name</h2>
 <form action="/post" method="POST" id="formsie">
-	<p>I would like to eat in the next 
-		<input type="text" name="time" id="time" value="15" />
-		minutes with my friends.</p>
+	<p>I would like to eat in the next <input type="text" name="time" id="time" value="15" /> minutes with my friends.</p>
 	<input type="submit" value="Find me a date!" id="submit" />
 </form>
-
-<div>
-	<%= @user.inspect%>
-</div>

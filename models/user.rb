@@ -1,5 +1,5 @@
 class User
-  attr :fb_uid, :name, :email, :phone
+  attr :fb_uid, :name, :email, :auth_token
   def self.exists?(fb_id)
     !$redis.hexists('user:'+fb_id, 'name').nil?
   end
@@ -13,15 +13,16 @@ class User
    User.new(user['name'], fb_id, user['email'], user['phone'])
   end
 
-  def initialize(name, fb_uid, email, phone)
+  def initialize(name, fb_uid, email, auth_token)
     @name = name
     @fb_uid = fb_uid
     @email = email
-    @phone = phone
+    @auth_token = auth_token
   end
 
-  def self.create(name, fb_uid, email, phone)
-    $redis.hmset('user:'+fb_uid, 'name', name, 'email', email, 'phone', phone)
+  def self.create(name, fb_uid, email, auth_token)
+    $redis.hmset('user:'+fb_uid, 'name', name, 'email',
+      email, 'auth_token', auth_token )
   end
   
   def self.add_friends(fid1, fid2)
@@ -57,11 +58,21 @@ class User
     all
   end
   
+  def self.friends? (fid1, fid2)
+    $redis.sismember('user:'+fid1+':friends', fid2)
+  end
+  
   # for a given fb_uid, add all friends who are using DWF
-  def find_existing_friends(user, friendlist)
-    friendlist.each do |f|
+  def self.add_existing_friends(id, friends)
+    added = []
+    friends.each do |f|
       if User.exists? f.id
-        User.add_friends(user.id, f.id)
+        unless User.friends? id, f.id
+          User.add_friends(id, f.id)
+          added << f.name
+        end
+      end
     end
+    added
   end
 end

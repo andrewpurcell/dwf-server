@@ -14,20 +14,6 @@ label {
     width: 60px;
 }
 
-#formsie {
-    width: 200px;
-}
-
-#formsie label {
-    display: inline-block;
-    width: 48%;
-}
-#formsie input {
-    width: 47%;
-}
-#formsie span {
-    vertical-align: center;
-}
 #formsie input {
     color: #888;
 }

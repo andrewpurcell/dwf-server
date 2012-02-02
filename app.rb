@@ -14,7 +14,7 @@ set :show_exceptions, false
 # permissions your app needs.
 # See https://developers.facebook.com/docs/reference/api/permissions/
 # for a full list of permissions
-FACEBOOK_SCOPE = 'read_friendlists,manage_friendlists,offline_access'
+FACEBOOK_SCOPE = 'email,offline_access'
 
 unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
   abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
@@ -61,16 +61,13 @@ helpers do
   end
 
   def validate_post_contents(post)
-    username = params[:username]
-    ttl = params[:time]
-    if !User.exists? username
-      puts "user doesn't exist"
-      return false
-    elsif ttl.to_i <= 0
-      puts "bad time"
-      return false
-    end
-    true
+    post[:time].to_i > 0 ? true : false
+  end
+  
+  def get_me
+    client = Mogli::Client.new(session[:at])
+    app  = Mogli::Application.find(ENV["FACEBOOK_APP_ID"], client)
+    Mogli::User.find("me", client)
   end
 end
 
@@ -111,7 +108,7 @@ get "/close" do
 end
 
 get "/auth/facebook" do
-  session[:at]=nil
+  session[:at] = nil
   redirect authenticator.authorize_url(:scope => FACEBOOK_SCOPE, :display => 'page')
 end
 
@@ -119,22 +116,18 @@ end
 get '/auth/facebook/callback' do
   client = Mogli::Client.create_from_code_and_authenticator(params[:code], authenticator)
   session[:at] = client.access_token
+  me = Mogli::User.find("me", client)
+  unless User.exist? me.id
+    User.create(me.name, me.id, me.email, client.access_token)
+  end
   redirect '/'
 end
 
-post '/new_user' do 
-  name = params[:name]
-  uid = params[:username]
-  email = params[:email]
-  phone = params[:phone]
-
-  if User.exists?(uid)
-    body << "Username already exists"
-  else
-    User.create(name, uid, email, phone)
-    puts "new user: #{name}, #{uid}, #{email}, #{phone}"
-    body << "User created!"
-  end
+get '/sync_friends' do
+  redirect "/auth/facebook" unless session[:at]
+  @user = get_me()
+  @friends = User.add_existing_friends(@user.id, @user.friends)
+  erb :sync_friends
 end
 
 get '/find_matches/:username' do
@@ -151,11 +144,15 @@ get '/find_matches/:username' do
 end
 
 post '/post' do
+  redirect "/auth/facebook" unless session[:at]
   if validate_post_contents(params)
-    user = User.find(params[:username])
-    user.create_event(params[:time]*60)
-    @name = params[:username]
-    erb :post_success
+    me = get_me()
+    begin
+      User.find(me.id).create_event(params[:time])
+      erb :post_success
+    rescue
+      erb :post_failed
+    end
   else
     erb :post_failed
   end
@@ -163,7 +160,6 @@ end
 
 get '/active' do
   @all_users = User.get_all_active_users()
-  puts @all_users.inspect
   erb :all_active
 end
 
