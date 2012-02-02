@@ -35,10 +35,11 @@ before do
     $redis = Redis.new
   end
   
-  redirect "/auth/facebook" unless session[:at] or request.path_info.include? "/auth/facebook"
-  @client = Mogli::Client.new(session[:at])
-  @app  = Mogli::Application.find(ENV["FACEBOOK_APP_ID"], @client)
-  @user = Mogli::User.find("me", @client)
+  if session[:at]
+    @client = Mogli::Client.new(session[:at])
+    @app  = Mogli::Application.find(ENV["FACEBOOK_APP_ID"], @client)
+    @user = Mogli::User.find("me", @client)
+  end
 end
 
 helpers do
