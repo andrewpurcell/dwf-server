@@ -130,6 +130,15 @@ get '/sync_friends' do
   erb :sync_friends
 end
 
+get '/register' do
+  redirect "/auth/facebook" unless session[:at]
+  @client = Mogli::Client.new(session[:at])
+  @app  = Mogli::Application.find(ENV["FACEBOOK_APP_ID"], @client)
+  @user = Mogli::User.find("me", @client)
+  User.create(@user.name, @user.id, @user.email, @client.access_token)
+  erb :registered
+end
+
 get '/find_matches/:username' do
   if User.exists?(params[:username])
     @friends = User.find(params[:username]).get_active_friends()
@@ -148,13 +157,14 @@ post '/post' do
   if validate_post_contents(params)
     me = get_me()
     begin
-      User.find(me.id).create_event(params[:time])
+      @user = User.find(me.id)
+      @event = @user.create_event(params[:time])
       erb :post_success
     rescue
       erb :post_failed
     end
   else
-    erb :post_failed
+    erb :post_failed_validation
   end
 end
 
