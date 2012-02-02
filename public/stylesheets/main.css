@@ -1,0 +1,38 @@
+body {
+    margin-left: 20%;
+    margin-top: 20%;
+    font-family: sans-serif;
+    color: #333;
+    width: 600px;
+}
+
+h1 {
+    color: orange;
+    size: 2em;
+}
+label {
+    width: 60px;
+}
+
+#formsie {
+    width: 200px;
+}
+
+#formsie label {
+    display: inline-block;
+    width: 48%;
+}
+#formsie input {
+    width: 47%;
+}
+#formsie span {
+    vertical-align: center;
+}
+#formsie input {
+    color: #888;
+}
+#formsie #submit {
+    color: #000;
+    float: right;
+    width: 100%;
+}
