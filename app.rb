@@ -2,6 +2,7 @@ require "sinatra"
 require "mogli"
 require 'erubis'
 require 'redis'
+require 'models/user'
 
 enable :sessions
 set :raise_errors, false
