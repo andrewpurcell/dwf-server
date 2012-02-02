@@ -5,12 +5,6 @@
 
     <title><%= @app.name %></title>
     <link rel="stylesheet" href="/stylesheets/screen.css" media="screen">
-
-    <!-- These are Open Graph tags.  They add meta data to your  -->
-    <!-- site that facebook uses when your content is shared     -->
-    <!-- over facebook.  You should fill these tags in with      -->
-    <!-- your data.  To learn more about Open Graph, visit       -->
-    <!-- 'https://developers.facebook.com/docs/opengraph/'       -->
     <meta property="og:title" content=""/>
     <meta property="og:type" content=""/>
     <meta property="og:url" content=""/>
@@ -84,32 +78,6 @@
         </ul>
       </div>
 
-      <div class="list inline">
-        <h3>Recent photos</h3>
-        <ul class="photos">
-          <% @photos.each do |photo| %>
-            <li style="background-image: url(<%= photo.picture %>)"<%= first_column(photo, @photos) %>>
-              <a href="#" onclick="window.open('http://www.facebook.com/<%= photo.id %>')">
-                <%= photo.name %>
-              </a>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-
-      <div class="list">
-        <h3>Things you like</h3>
-        <ul class="things">
-          <% @likes.each do |like| %>
-            <li>
-              <a href="#" onclick="window.open('http://www.facebook.com/<%= like.id %>')">
-                <img src="https://graph.facebook.com/<%= like.id %>/picture?type=square" alt="<%= like.name %>">
-                <%= like.name %>
-              </a>
-            </li>
-          <% end %>
-        </ul>
-      </div>
 
       <div class="list">
         <h3>Friends using this app</h3>
@@ -126,32 +94,5 @@
       </div>
     </section>
 
-    <section id="guides" class="clearfix">
-      <h1>Learn More About Heroku &amp; Facebook Apps</h1>
-      <ul>
-        <li>
-          <a href="http://www.heroku.com/" class="icon heroku">Heroku</a>
-          <p>Learn more about <a href="http://www.heroku.com/">Heroku</a>, or read developer docs in the Heroku <a href="http://devcenter.heroku.com/">Dev Center</a>.</p>
-        </li>
-        <li>
-          <a href="#" class="icon websites">Websites</a>
-          <p>
-            Drive growth and engagement on your site with
-            Facebook Login and Social Plugins.
-          </p>
-        </li>
-        <li>
-          <a href="#" class="icon mobile-apps">Mobile Apps</a>
-          <p>
-            Integrate with our core experience by building apps
-            that operate within Facebook.
-          </p>
-        </li>
-        <li>
-          <a href="#" class="icon apps-on-facebook">Apps on Facebook</a>
-          <p>Let users find and connect to their friends in mobile apps and games.</p>
-        </li>
-      </ul>
-    </section>
   </body>
 </html>
