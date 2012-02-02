@@ -1,34 +1,38 @@
 class User
-  attr :username, :name, :email, :phone
-  def self.exists?(user_name)
-    !$redis.hget('user:'+user_name, 'name').nil?
+  attr :fb_uid, :name, :email, :phone
+  def self.exists?(fb_id)
+    !$redis.hexists('user:'+fb_id, 'name').nil?
   end
 
-  def self.find(user_name)
-   user = $redis.hgetall('user:'+user_name)
+  def self.find(fb_id)
+   user = $redis.hgetall('user:'+fb_id)
    if user == {}
      puts user.inspect
-     puts "hello :("
      raise "User not found"
    end
-   User.new(user['name'], user_name, user['email'], user['phone'])
+   User.new(user['name'], fb_id, user['email'], user['phone'])
   end
 
-  def initialize(name, uname, email, phone)
+  def initialize(name, fb_uid, email, phone)
     @name = name
-    @username = uname
+    @fb_uid = fb_uid
     @email = email
     @phone = phone
   end
 
-  def self.create(name, uname, email, phone)
-    $redis.hmset('user:'+uname, 'name', name, 'email', email, 'phone', phone)
+  def self.create(name, fb_uid, email, phone)
+    $redis.hmset('user:'+fb_uid, 'name', name, 'email', email, 'phone', phone)
+  end
+  
+  def self.add_friends(fid1, fid2)
+    $redis.sadd('user:'+fid1+':friends', fid2)
+    $redis.sadd('user:'+fid2+':friends', fid1)
   end
   
   def create_event(ttl)
     $redis.multi do
-      $redis.sadd('active_users', @username)
-      $redis.setex('user:'+@username+':active', ttl, 'yes')
+      $redis.sadd('active_users', @fb_uid)
+      $redis.setex('user:'+@fb_uid+':active', ttl, 'yes')
     end
   end
 
@@ -41,7 +45,7 @@ class User
   end
 
   def get_active_friends()
-    friends = $redis.sinter('user:'+@username+':friends', 'active_users')
+    friends = $redis.sinter('user:'+@fb_uid+':friends', 'active_users')
     all = []
     friends.each do |f|
       if $redis.get('user:'+f+':active')
@@ -51,5 +55,13 @@ class User
       end
     end
     all
+  end
+  
+  # for a given fb_uid, add all friends who are using DWF
+  def find_existing_friends(user, friendlist)
+    friendlist.each do |f|
+      if User.exists? f.id
+        User.add_friends(user.id, f.id)
+    end
   end
 end

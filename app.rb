@@ -115,9 +115,11 @@ get "/auth/facebook" do
   redirect authenticator.authorize_url(:scope => FACEBOOK_SCOPE, :display => 'page')
 end
 
+# This is the crucial step for new user creation!!
 get '/auth/facebook/callback' do
   client = Mogli::Client.create_from_code_and_authenticator(params[:code], authenticator)
   session[:at] = client.access_token
+  if 
   redirect '/'
 end
 
