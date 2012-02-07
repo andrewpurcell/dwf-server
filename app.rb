@@ -21,6 +21,10 @@ unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
   abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
 end
 
+not_found do
+  erb :not_found
+end
+
 before do
   # HTTPS redirect
   if settings.environment == :production && request.scheme != 'https'
@@ -78,9 +82,6 @@ helpers do
   end
 end
 
-not_found do
-  erb :"404"
-end
 
 # the facebook session expired! reset ours and restart the process
 error(Mogli::Client::HTTPException) do
@@ -89,7 +90,8 @@ error(Mogli::Client::HTTPException) do
 end
 
 error do
-  'Sorry there was a nasty error - ' + env['sinatra.error'].name
+  @error = env['sinatra.error'].name
+  erb :error
 end
 
 get "/" do
@@ -155,9 +157,10 @@ get '/register' do
   erb :registered
 end
 
-get '/find_matches/:username' do
-  if User.exists?(params[:username])
-    @friends = User.find(params[:username]).get_active_friends()
+get '/find_matches' do
+  redirect "/auth/facebook" unless session[:at]
+  if User.exists?(@user.id)
+    @friends = User.find(@user.id).get_active_friends
     if @friends.length > 0
       erb :show_friends
     else
@@ -185,15 +188,8 @@ post '/post' do
 end
 
 get '/active' do
-  @all_users = User.get_all_active_users()
+  @all_users = User.get_all_active_users
   erb :all_active
 end
 
-get '/users/:username' do
-  begin
-    @user = User.find(params[:username])
-    erb :exists
-  rescue
-    erb :no_such_user
-  end
-end
+get '/api/'

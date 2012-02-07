@@ -1,0 +1,33 @@
+Dine With Friends REST API RFC
+
+Methods
+# sign up and wait for notifications, this will probably expand with more options
+/register_device/?auth_token=&type=&device_id=
+	auth_token = facebook auth token
+	type = iphone|android
+	device_id = id for push if iphone, phone# if droid
+
+returns: {code:'success'} or {code:'fail'}
+
+# "I want to eat in #{time} minutes."
+/post/?auth_token=&time=
+	auth_token = facebook auth token
+	time = time to wait for match, in minutes
+
+returns: {code:'success'} or {code:'fail'}
+
+# get all available friends (useful for long polling, or wake from sleep)
+/active_friends/?auth_token=
+
+returns {friends:[{name:'NAME', id:'FB_ID', time_end:'now()+ttl', fb_pic_src:'url/of/square/image', loc:'location', others:[{name:'Erik Formella', id:'fb_id'},...]}...]}
+
+# update post details
+/update_post/?auth_token=&time=&loc=&friends_going=&close=
+	all fields optional except auth_token
+	time = new time to live
+	loc = location
+	friends_going = comma separated list of the fb_ids of friends going
+	close = true/false, whether to accept a match and expire the date
+
+	
+returns {end_time:'now()+new_ttl', friends_added:'X', loc:'new loc'}

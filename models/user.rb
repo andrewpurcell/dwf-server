@@ -13,6 +13,10 @@ class User
    User.new(user['name'], fb_id, user['email'], user['phone'])
   end
 
+  def self.active?(id)
+    $redis.get 'user:'+id+':active'
+  end
+
   def initialize(name, fb_uid, email, auth_token)
     @name = name
     @fb_uid = fb_uid

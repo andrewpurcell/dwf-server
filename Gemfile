@@ -7,3 +7,4 @@ gem "httparty"
 gem "thin"
 gem 'redis'
 gem 'erubis'
+gem 'shotgun'
