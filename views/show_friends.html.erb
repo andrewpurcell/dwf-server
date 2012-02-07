@@ -1,6 +1,10 @@
+<% if @friends.length > 0 %>
 <h1>Yay! People want to eat with you!</h1>
 <ul>
 	<% @friends.each do |f| %>
 		<li><%= print_info_on_active f %></li>
 	<% end %>
 </ul>
+<% else %>
+<h1>You have no friends. :(</h1>
+<% end %>
