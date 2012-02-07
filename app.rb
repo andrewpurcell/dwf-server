@@ -191,5 +191,3 @@ get '/active' do
   @all_users = User.get_all_active_users
   erb :all_active
 end
-
-get '/api/'
