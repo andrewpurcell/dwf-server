@@ -1,0 +1,17 @@
+<!doctype html>
+<head>
+	<title><%= @title %></title>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script src="/js/main.js" type="text/javascript"></script>
+</head>
+
+<body>
+	<%= yield %>
+	<ul id="footer-nav">
+		<li><a href="/">Find a date</a></li>
+		<li><a href="/sync_friends">Sync friends with Facebook</a></li>
+		<li><a href="<%= post_to_wall_url %>" target="_blank">Post about DWF on Facebook</a></li>
+	</ul>
+</body>
+</html>

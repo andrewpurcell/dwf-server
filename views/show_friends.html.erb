@@ -1,0 +1,6 @@
+<h1>Yay! People want to eat with you!</h1>
+<ul>
+	<% @friends.each do |f| %>
+		<li><%= print_info_on_active f %></li>
+	<% end %>
+</ul>

@@ -1,0 +1,9 @@
+<h1>Sync Friends</h1>
+<% if @friends.length > 0%>
+	<p>We found <%= @friends.length %> of your friends on Facebook and added you as friends.</p>
+	<% if @friends.length %>
+		<p>We added: <%= @friends.join(', ') %></p>
+	<% end %>
+<% else %>
+	<p>We didn't find anybody to add from Facebook!</p>
+<% end %>
