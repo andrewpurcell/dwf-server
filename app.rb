@@ -25,6 +25,17 @@ not_found do
   erb :not_found
 end
 
+# the facebook session expired! reset ours and restart the process
+error(Mogli::Client::HTTPException) do
+  session[:at] = nil
+  redirect "/auth/facebook"
+end
+
+error do
+  @error = env['sinatra.error'].name
+  erb :error
+end
+
 before do
   # HTTPS redirect
   if settings.environment == :production && request.scheme != 'https'
@@ -37,6 +48,7 @@ before do
 
   configure :test, :development do
     $redis = Redis.new
+    abort("redis not instantiated") if $redis.nil?
   end
   
   if session[:at]
@@ -80,18 +92,6 @@ helpers do
     app  = Mogli::Application.find(ENV["FACEBOOK_APP_ID"], client)
     Mogli::User.find("me", client)
   end
-end
-
-
-# the facebook session expired! reset ours and restart the process
-error(Mogli::Client::HTTPException) do
-  session[:at] = nil
-  redirect "/auth/facebook"
-end
-
-error do
-  @error = env['sinatra.error'].name
-  erb :error
 end
 
 get "/" do
@@ -190,4 +190,8 @@ end
 get '/active' do
   @all_users = User.get_all_active_users
   erb :all_active
+end
+
+get '*' do
+  erb :not_found
 end
